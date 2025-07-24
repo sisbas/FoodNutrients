@@ -1,1 +1,446 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Besin Nutrient Uygulaması</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .food-selector {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        select {
+            padding: 12px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 25px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            outline: none;
+            min-width: 300px;
+        }
+
+        select:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .food-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .food-card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .food-info {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .food-name {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .scientific-name {
+            font-size: 1.2rem;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .category {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .nutrients-section {
+            margin-top: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .nutrients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .nutrient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #f8f9ff, #e8f0ff);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nutrient-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .nutrient-name {
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .nutrient-value {
+            font-weight: bold;
+            color: #667eea;
+            margin-left: 10px;
+        }
+
+        .nutrient-unit {
+            color: #666;
+            font-size: 0.9rem;
+            margin-left: 5px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            transform: scale(0.95);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: scale(1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            padding: 40px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .food-card {
+                padding: 20px;
+            }
+            
+            .nutrients-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            select {
+                min-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🥗 Besin Nutrient Uygulaması</h1>
+        
+        <div class="food-selector">
+            <select id="foodSelect">
+                <option value="">Bir besin seçin...</option>
+            </select>
+        </div>
+
+        <div id="foodDisplay"></div>
+    </div>
+
+    <script>
+        const nutritionData = {
+            "FoundationFoods": [
+                {
+                    "foodClass": "FinalFood",
+                    "description": "Hummus, commercial",
+                    "scientificName": "",
+                    "foodCategory": {"description": "Legumes and Legume Products"},
+                    "foodNutrients": [
+                        {"nutrient": {"name": "Cryptoxanthin, beta", "unitName": "µg"}, "amount": 3.00},
+                        {"nutrient": {"name": "Lycopene", "unitName": "µg"}, "amount": 0.000},
+                        {"nutrient": {"name": "Tocopherol, delta", "unitName": "mg"}, "amount": 1.30},
+                        {"nutrient": {"name": "Tocotrienol, gamma", "unitName": "mg"}, "amount": 0.000},
+                        {"nutrient": {"name": "Tocotrienol, delta", "unitName": "mg"}, "amount": 0.000},
+                        {"nutrient": {"name": "Vitamin C, total ascorbic acid", "unitName": "mg"}, "amount": 0.000},
+                        {"nutrient": {"name": "Thiamin", "unitName": "mg"}, "amount": 0.150},
+                        {"nutrient": {"name": "Riboflavin", "unitName": "mg"}, "amount": 0.115},
+                        {"nutrient": {"name": "Folate, total", "unitName": "µg"}, "amount": 36.0},
+                        {"nutrient": {"name": "Vitamin K (phylloquinone)", "unitName": "µg"}, "amount": 17.2},
+                        {"nutrient": {"name": "Fatty acids, total trans", "unitName": "g"}, "amount": 0.018},
+                        {"nutrient": {"name": "Fatty acids, total saturated", "unitName": "g"}, "amount": 2.22},
+                        {"nutrient": {"name": "Protein", "unitName": "g"}, "amount": 7.35},
+                        {"nutrient": {"name": "Ash", "unitName": "g"}, "amount": 1.97},
+                        {"nutrient": {"name": "Starch", "unitName": "g"}, "amount": 8.12},
+                        {"nutrient": {"name": "Fructose", "unitName": "g"}, "amount": 0.150},
+                        {"nutrient": {"name": "Energy", "unitName": "kJ"}, "amount": 960},
+                        {"nutrient": {"name": "Fiber, total dietary", "unitName": "g"}, "amount": 5.40},
+                        {"nutrient": {"name": "Iron, Fe", "unitName": "mg"}, "amount": 2.41},
+                        {"nutrient": {"name": "Magnesium, Mg", "unitName": "mg"}, "amount": 71.1},
+                        {"nutrient": {"name": "Phosphorus, P", "unitName": "mg"}, "amount": 166},
+                        {"nutrient": {"name": "Sodium, Na", "unitName": "mg"}, "amount": 438},
+                        {"nutrient": {"name": "Copper, Cu", "unitName": "mg"}, "amount": 0.348},
+                        {"nutrient": {"name": "Manganese, Mn", "unitName": "mg"}, "amount": 1.06},
+                        {"nutrient": {"name": "Vitamin A, RAE", "unitName": "µg"}, "amount": 1.00},
+                        {"nutrient": {"name": "Carotene, beta", "unitName": "µg"}, "amount": 12.0},
+                        {"nutrient": {"name": "Fatty acids, total monounsaturated", "unitName": "g"}, "amount": 6.37},
+                        {"nutrient": {"name": "Fatty acids, total polyunsaturated", "unitName": "g"}, "amount": 7.48},
+                        {"nutrient": {"name": "Total lipid (fat)", "unitName": "g"}, "amount": 17.1},
+                        {"nutrient": {"name": "Carbohydrate, by difference", "unitName": "g"}, "amount": 14.9},
+                        {"nutrient": {"name": "Energy", "unitName": "kcal"}, "amount": 229},
+                        {"nutrient": {"name": "Water", "unitName": "g"}, "amount": 58.7},
+                        {"nutrient": {"name": "Calcium, Ca", "unitName": "mg"}, "amount": 41.0},
+                        {"nutrient": {"name": "Potassium, K", "unitName": "mg"}, "amount": 289},
+                        {"nutrient": {"name": "Zinc, Zn", "unitName": "mg"}, "amount": 1.38},
+                        {"nutrient": {"name": "Vitamin E (alpha-tocopherol)", "unitName": "mg"}, "amount": 1.74},
+                        {"nutrient": {"name": "Choline, total", "unitName": "mg"}, "amount": 46.6}
+                    ]
+                },
+                {
+                    "foodClass": "FinalFood",
+                    "description": "Tomatoes, grape, raw",
+                    "scientificName": "Solanum lycopersicum",
+                    "foodCategory": {"description": "Vegetables and Vegetable Products"},
+                    "foodNutrients": [
+                        {"nutrient": {"name": "Water", "unitName": "g"}, "amount": 92.5},
+                        {"nutrient": {"name": "Vitamin C, total ascorbic acid", "unitName": "mg"}, "amount": 27.2},
+                        {"nutrient": {"name": "Ash", "unitName": "g"}, "amount": 0.560},
+                        {"nutrient": {"name": "Total lipid (fat)", "unitName": "g"}, "amount": 0.630},
+                        {"nutrient": {"name": "Calcium, Ca", "unitName": "mg"}, "amount": 11.0},
+                        {"nutrient": {"name": "Copper, Cu", "unitName": "mg"}, "amount": 0.058},
+                        {"nutrient": {"name": "Iron, Fe", "unitName": "mg"}, "amount": 0.330},
+                        {"nutrient": {"name": "Magnesium, Mg", "unitName": "mg"}, "amount": 11.9},
+                        {"nutrient": {"name": "Manganese, Mn", "unitName": "mg"}, "amount": 0.121},
+                        {"nutrient": {"name": "Phosphorus, P", "unitName": "mg"}, "amount": 28.0},
+                        {"nutrient": {"name": "Potassium, K", "unitName": "mg"}, "amount": 260},
+                        {"nutrient": {"name": "Sodium, Na", "unitName": "mg"}, "amount": 6.00},
+                        {"nutrient": {"name": "Zinc, Zn", "unitName": "mg"}, "amount": 0.200},
+                        {"nutrient": {"name": "Fiber, total dietary", "unitName": "g"}, "amount": 2.10},
+                        {"nutrient": {"name": "Lycopene", "unitName": "µg"}, "amount": 4100},
+                        {"nutrient": {"name": "Vitamin E (alpha-tocopherol)", "unitName": "mg"}, "amount": 0.980},
+                        {"nutrient": {"name": "Vitamin K (phylloquinone)", "unitName": "µg"}, "amount": 4.20},
+                        {"nutrient": {"name": "Protein", "unitName": "g"}, "amount": 0.830},
+                        {"nutrient": {"name": "Carbohydrate, by difference", "unitName": "g"}, "amount": 5.51},
+                        {"nutrient": {"name": "Energy", "unitName": "kcal"}, "amount": 27.0},
+                        {"nutrient": {"name": "Energy", "unitName": "kJ"}, "amount": 113},
+                        {"nutrient": {"name": "Choline, total", "unitName": "mg"}, "amount": 9.80}
+                    ]
+                }
+            ]
+        };
+
+        const turkishNames = {
+            "Hummus, commercial": "Hummus (Ticari)",
+            "Tomatoes, grape, raw": "Üzüm Domates (Çiğ)"
+        };
+
+        const turkishNutrients = {
+            "Water": "Su",
+            "Protein": "Protein",
+            "Total lipid (fat)": "Toplam Yağ",
+            "Carbohydrate, by difference": "Karbonhidrat",
+            "Ash": "Kül",
+            "Energy": "Enerji",
+            "Fiber, total dietary": "Diyet Lifi",
+            "Calcium, Ca": "Kalsiyum",
+            "Iron, Fe": "Demir",
+            "Magnesium, Mg": "Magnezyum",
+            "Phosphorus, P": "Fosfor",
+            "Potassium, K": "Potasyum",
+            "Sodium, Na": "Sodyum",
+            "Zinc, Zn": "Çinko",
+            "Copper, Cu": "Bakır",
+            "Manganese, Mn": "Manganez",
+            "Vitamin C, total ascorbic acid": "C Vitamini",
+            "Thiamin": "B1 Vitamini (Tiamin)",
+            "Riboflavin": "B2 Vitamini (Riboflavin)",
+            "Vitamin E (alpha-tocopherol)": "E Vitamini",
+            "Vitamin K (phylloquinone)": "K Vitamini",
+            "Vitamin A, RAE": "A Vitamini",
+            "Folate, total": "Folat",
+            "Choline, total": "Kolin",
+            "Lycopene": "Likopen",
+            "Carotene, beta": "Beta Karoten",
+            "Starch": "Nişasta",
+            "Fructose": "Fruktoz",
+            "Fatty acids, total saturated": "Doymuş Yağ Asitleri",
+            "Fatty acids, total monounsaturated": "Tekli Doymamış Yağ Asitleri",
+            "Fatty acids, total polyunsaturated": "Çoklu Doymamış Yağ Asitleri",
+            "Fatty acids, total trans": "Trans Yağ Asitleri",
+            "Tocopherol, delta": "Delta Tokoferol",
+            "Tocotrienol, gamma": "Gama Tokotrienol",
+            "Tocotrienol, delta": "Delta Tokotrienol",
+            "Cryptoxanthin, beta": "Beta Kriptoksantin"
+        };
+
+        function populateSelector() {
+            const select = document.getElementById('foodSelect');
+            nutritionData.FoundationFoods.forEach((food, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = turkishNames[food.description] || food.description;
+                select.appendChild(option);
+            });
+        }
+
+        function displayFood(foodIndex) {
+            const food = nutritionData.FoundationFoods[foodIndex];
+            const display = document.getElementById('foodDisplay');
+            
+            // Nutrientleri değere göre sırala (büyükten küçüğe)
+            const sortedNutrients = [...food.foodNutrients]
+                .filter(nutrient => nutrient.amount > 0)
+                .sort((a, b) => b.amount - a.amount);
+
+            const turkishName = turkishNames[food.description] || food.description;
+            const scientificName = food.scientificName || 'Bilimsel adı mevcut değil';
+            
+            display.innerHTML = `
+                <div class="food-card show">
+                    <div class="food-info">
+                        <div class="food-name">${turkishName}</div>
+                        <div class="scientific-name">${scientificName}</div>
+                        <div class="category">${food.foodCategory.description}</div>
+                    </div>
+                    
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-number">${sortedNutrients.length}</div>
+                            <div class="stat-label">Toplam Nutrient</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${food.foodNutrients.find(n => n.nutrient.name === 'Energy' && n.nutrient.unitName === 'kcal')?.amount || 0}</div>
+                            <div class="stat-label">Kalori (kcal)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${food.foodNutrients.find(n => n.nutrient.name === 'Protein')?.amount || 0}g</div>
+                            <div class="stat-label">Protein</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${food.foodNutrients.find(n => n.nutrient.name === 'Total lipid (fat)')?.amount || 0}g</div>
+                            <div class="stat-label">Yağ</div>
+                        </div>
+                    </div>
+
+                    <div class="nutrients-section">
+                        <h2 class="section-title">🧪 Nutrient İçeriği (Yüksekten Düşüğe)</h2>
+                        <div class="nutrients-grid">
+                            ${sortedNutrients.map(nutrient => `
+                                <div class="nutrient-item">
+                                    <span class="nutrient-name">${turkishNutrients[nutrient.nutrient.name] || nutrient.nutrient.name}</span>
+                                    <span class="nutrient-value">
+                                        ${nutrient.amount}
+                                        <span class="nutrient-unit">${nutrient.nutrient.unitName}</span>
+                                    </span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.getElementById('foodSelect').addEventListener('change', function() {
+            const selectedIndex = this.value;
+            if (selectedIndex !== '') {
+                displayFood(parseInt(selectedIndex));
+            } else {
+                document.getElementById('foodDisplay').innerHTML = '';
+            }
+        });
+
+        // Sayfa yüklendiğinde selector'ı doldur
+        populateSelector();
+    </script>
+</body>
+</html>
