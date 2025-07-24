@@ -477,66 +477,12 @@
             // JSON verilerini yükle
             $scope.loadData = function() {
                 // Gerçek uygulamada bu URL'yi kullanın:
-                // $http.get('FoodData_Central_foundation_food_json_2025-04-24.json')
+                $http.get('FoodData_Central_foundation_food_json_2025-04-24.json')
                 
-                // Demo için örnek veri kullanıyoruz
-                const mockData = {
-                    "FoundationFoods": [
-                        {
-                            "foodClass": "FinalFood",
-                            "description": "Hummus, commercial",
-                            "scientificName": "",
-                            "foodCategory": {"description": "Legumes and Legume Products"},
-                            "foodNutrients": [
-                                {"nutrient": {"name": "Energy", "unitName": "kcal"}, "amount": 229},
-                                {"nutrient": {"name": "Protein", "unitName": "g"}, "amount": 7.35},
-                                {"nutrient": {"name": "Total lipid (fat)", "unitName": "g"}, "amount": 17.1},
-                                {"nutrient": {"name": "Carbohydrate, by difference", "unitName": "g"}, "amount": 14.9},
-                                {"nutrient": {"name": "Water", "unitName": "g"}, "amount": 58.7},
-                                {"nutrient": {"name": "Fiber, total dietary", "unitName": "g"}, "amount": 5.40},
-                                {"nutrient": {"name": "Iron, Fe", "unitName": "mg"}, "amount": 2.41},
-                                {"nutrient": {"name": "Calcium, Ca", "unitName": "mg"}, "amount": 41.0},
-                                {"nutrient": {"name": "Vitamin C, total ascorbic acid", "unitName": "mg"}, "amount": 0.000}
-                            ]
-                        },
-                        {
-                            "foodClass": "FinalFood",
-                            "description": "Tomatoes, grape, raw",
-                            "scientificName": "Solanum lycopersicum",
-                            "foodCategory": {"description": "Vegetables and Vegetable Products"},
-                            "foodNutrients": [
-                                {"nutrient": {"name": "Energy", "unitName": "kcal"}, "amount": 27.0},
-                                {"nutrient": {"name": "Protein", "unitName": "g"}, "amount": 0.830},
-                                {"nutrient": {"name": "Total lipid (fat)", "unitName": "g"}, "amount": 0.630},
-                                {"nutrient": {"name": "Carbohydrate, by difference", "unitName": "g"}, "amount": 5.51},
-                                {"nutrient": {"name": "Water", "unitName": "g"}, "amount": 92.5},
-                                {"nutrient": {"name": "Fiber, total dietary", "unitName": "g"}, "amount": 2.10},
-                                {"nutrient": {"name": "Vitamin C, total ascorbic acid", "unitName": "mg"}, "amount": 27.2},
-                                {"nutrient": {"name": "Lycopene", "unitName": "µg"}, "amount": 4100}
-                            ]
-                        }
-                    ]
-                };
-
-                // Simüle edilmiş HTTP isteği
-                setTimeout(function() {
-                    try {
-                        $scope.$apply(function() {
-                            $scope.foods = mockData.FoundationFoods;
-                            $scope.filteredFoods = $scope.foods;
-                            $scope.extractCategories();
-                            $scope.loading = false;
-                        });
-                    } catch (e) {
-                        $scope.$apply(function() {
-                            $scope.error = "Veri yükleme hatası: " + e.message;
-                            $scope.loading = false;
-                        });
-                    }
-                }, 1000);
+         
 
                 // Gerçek JSON dosyası için bu kodu kullanın:
-                /*
+                
                 $http.get('FoodData_Central_foundation_food_json_2025-04-24.json')
                     .then(function(response) {
                         $scope.foods = response.data.FoundationFoods || [];
@@ -547,7 +493,7 @@
                         $scope.error = "JSON dosyası yüklenemedi. Dosyanın doğru konumda olduğundan emin olun.";
                         $scope.loading = false;
                     });
-                */
+                
             };
 
             // Kategorileri çıkar
