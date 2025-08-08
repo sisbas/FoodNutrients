@@ -1,0 +1,13 @@
+{
+  "name": "foodnutrients-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["packages/*", "server", "app"],
+  "scripts": {
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
