@@ -1,0 +1,11 @@
+{
+  "name": "app",
+  "version": "0.0.1",
+  "main": "App.tsx",
+  "type": "module",
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-native": "0.72.0",
+    "axios": "^1.0.0"
+  }
+}
